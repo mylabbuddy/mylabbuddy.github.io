@@ -1,183 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLB | Pathology Test Directory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom styles for a subtle scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-        .category-btn.active {
-            background-color: #2563eb;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Form</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background: white;
+      padding: 25px 35px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .msg {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body>
+  <div class="form-container">
+    <h2>Contact Form</h2>
+    <input type="text" id="name" placeholder="Enter your name" required />
+    <input type="tel" id="phone" placeholder="Enter your phone number" required />
+    <button onclick="submitData()">Submit</button>
+    <div class="msg" id="msg"></div>
+  </div>
 
-    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl">
-        <!-- Header Section -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight">MLB Pathology Test Directory</h1>
-            <p class="text-slate-500 mt-2 text-base md:text-lg">Your comprehensive guide to laboratory tests.</p>
-        </header>
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxh4ZOK1gyQMtAQ1uouii91grvVr3zjSmUmcImobXFf7MKe2oI0kh5HZc54EA6AHCWTQ/exec"; // 👈 Add your Apps Script URL here
 
-        <!-- Search Input -->
-        <div class="mb-8 max-w-2xl mx-auto">
-            <input type="text" id="searchInput" placeholder="Search for any test..." class="w-full px-5 py-3 text-lg border-2 border-slate-200 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow duration-300 shadow-sm hover:shadow-md focus:shadow-lg">
-        </div>
+    async function submitData() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const msg = document.getElementById("msg");
 
-        <!-- Category Filters -->
-        <div id="categoryButtons" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-10">
-            <!-- Category buttons will be dynamically inserted here -->
-        </div>
+      if (!name || !phone) {
+        msg.textContent = "Please enter both fields.";
+        msg.style.color = "red";
+        return;
+      }
 
-        <!-- Test List Grid -->
-        <main id="testList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            <!-- Test items will be dynamically inserted here -->
-        </main>
-        
-        <!-- No Results Message -->
-        <div id="noResultsMessage" class="hidden text-center py-16">
-            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h3 class="mt-2 text-lg font-semibold text-slate-800">No tests found</h3>
-            <p class="mt-1 text-base text-slate-500">Try adjusting your search or filter.</p>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Data for all pathology tests categorized
-            const testData = {
-                "Hematology": [
-                    "Absolute Eosinophil Count (AEC)", "Blood Group Profile(ABO and Rh Factor)", "Coagulation - Activated Partial Thromboplastin Time (APTT/PTTK)", "Coagulation - Prothombin Time with INR (PT - INR)", "Complete Blood Count (CBC)", "Complete Blood Count (CBC) + PS", "Complete Hemogram (CHG) (CBC + ESR)", "Coombs Test, Direct", "Coombs Test, Indirect / ICT", "Differential Leucocytes Count (DLC), Automated", "Erythrocyte Sedimentation Rate (ESR)", "Ferritin", "Hb HPLC (Hb Electrophoresis/HbA2)", "Hemoglobin (Hb)", "Iron Profile Advanced / Iron Profile with Ferritin", "Iron Profile Basic / Iron Profile (Iron, TIBC, and Transferrin Saturation)", "Peripheral Blood Smear (PS), Examination", "Platelet Count", "Reticulocyte Count", "Total Leucocytes Count (TLC)/WBC Count", "Vitamin B12 (Cobalamin/Cyanocobalamin)", "Vitamin B9 (Folate/Folic Acid)"
-                ],
-                "Clinical Biochemistry": [
-                    "Adenosine Deaminase (ADA)", "Alkaline Phosphatase (ALP)", "Ammonia", "Amylase", "Angiotensin Converting Enzyme (ACE)", "Apolipoprotein A1", "Apolipoprotein B", "Apolipoprotein Profile (Apo A1, Apo B, and Apo B/A1 Ratio)", "Bicarbonate, Serum", "Bile Acids, Total", "Bilirubin (Total, Direct and Indirect)", "Blood Sugar, Fasting", "Blood Sugar, Post Prandial", "Blood Sugar, Random", "Blood Urea", "Blood Urea Nitrogen (BUN)", "Calcium - Total, Serum", "Calcium, Ionized", "Chloride, Serum", "Cholesterol - HDL, Direct", "Cholesterol - LDL, Direct", "Cholesterol, Total", "Creatine Phosphokinase (CPK), Total", "Creatine Phosphokinase Myocardial Band (CPK MB)", "Creatinine", "GGTP (Gamma Glutamyl Transpeptidase)", "HbA1c (Glycosylated Hemoglobin)", "Homocysteine", "Iron, Serum", "Iron, Total Iron Binding Capacity (TIBC)", "Lactate Dehydrogenase (LDH)", "Lipase, Serum", "Lipoprotein (A)", "Magnesium, Serum", "N-terminal Pro Brain Natriuretic Peptide (NT-Pro BNP)", "Phosphorus, Inorganic", "Potassium, Serum", "Protein Electrophoresis, Serum", "Serum Electrolytes (Na, K, Cl)", "SGOT (AST)", "SGPT (ALT)", "Sodium", "Total Protein With Albumin/Globulin Ratio", "Triglycerides, Serum", "Uric Acid", "Vitamin D (25-Hydroxy)", "Zinc"
-                ],
-                "Immunology & Serology": [
-                    "Allergy Profile (Veg + Non Veg)", "Allergy Screen Comprehensive Profile", "ANA/ENA Profile (18 antigens), Serum", "Anti-Nuclear Antibody (ANA) by ELISA", "Anti-Nuclear Antibody (ANA) by IFA", "Beta-2 glycoprotein antibody IgG", "Beta-2 glycoprotein antibody IgM", "C-Reactive Protein (CRP), Quantitative", "C3 Complement", "C4 Complement", "Cardiolipin, IgG Antibodies", "Cardiolipin, IgM Antibodies", "Cyclic Citrullinated Peptide (CCP) Antibodies", "High Sensitivity C-Reactive Protein (hsCRP)", "Immunoglobulin IgA, Total, Serum", "Immunoglobulin IgE, Total, Serum", "Immunoglobulin IgG, Total, Serum", "Immunoglobulin IgM, Total, Serum", "Immunoglobulin Profile (IgG, IgM, IgA), Total, Serum", "Phospholipid Antibody, IgG", "Phospholipid Antibody, IgM", "Procalcitonin", "Rheumatoid (RA) Factor, Quantitative", "Tissue Transglutaminase (TTG), IgA Antibodies", "Tuberculosis - TB-Feron/IGRA, Plasma"
-                ],
-                "Endocrinology": [
-                    "Anti-Mullerian Hormone (AMH)", "Beta HCG, Total", "C-Peptide, Fasting, Serum", "C-Peptide, Post Prandial, Serum", "C-Peptide, Random, Serum", "Cortisol, Evening", "Cortisol, Morning", "Cortisol, Random", "Dehydroepiandrosterone (DHEA) Sulphate", "Dihydrotestosterone (5-Alpha DHT)", "Estradiol (E2)", "Follicle Stimulating Hormone (FSH)", "Homa IR Index", "Insulin, Fasting", "Insulin, Post Prandial", "Insulin, Random", "Luteinizing Hormone (LH)", "Parathyroid Hormone (PTH) Test", "Progesterone (17 Alpha Hydroxy OHP)", "Progesterone (P4)", "Prolactin (PRL)", "Testosterone, Free", "Testosterone, Total", "Thyroglobulin antibody test / Anti Thyroglobulin Antibody; Anti TG", "Thyroid - Anti-Thyroid Peroxidase (TPO) Antibody", "Thyroid FT3 (Triiodothyronine), Free", "Thyroid FT4 (Thyroxine), Free", "Thyroid Stimulating Hormone (TSH)", "Thyroid T3 (Triiodothyronine), Total", "Thyroid T4 (Thyroxine), Total"
-                ],
-                "Microbiology": [
-                    "Blood Culture and Sensitivity (C/S) Test, Automated/Rapid", "Chikungunya IgM Antibodies", "Dengue Antibody, IgG by ELISA", "Dengue Antibody, IgM by ELISA", "Dengue NS1 Antigen by ELISA", "Hepatitis A Virus (HAV) Antibody, IgG", "Hepatitis A Virus (HAV) Antibody, IgM", "Hepatitis B Surface Antigen (HBsAg), Rapid Screening/Card", "Hepatitis B Surface Antigen (HBsAg), Screening/Qualitative/ELISA", "Hepatitis C Virus (HCV) Antibody, Rapid Screening Test/Card", "Hepatitis C Virus (HCV) Antibody, Screening Test/Total/Qualitative", "Hepatitis E Antibody (Anti-HEV), IgG", "Hepatitis E Antibody (Anti-HEV), IgM", "Herpes Simplex Virus (HSV) 1 and 2, IgG Antibodies", "Herpes Simplex Virus (HSV) 1 and 2, IgM Antibodies", "Herpes Simplex Virus (HSV) 1, IgG Antibodies", "Herpes Simplex Virus (HSV) 1, IgM Antibodies", "Herpes Simplex Virus (HSV) 2, IgG Antibodies", "Herpes Simplex Virus (HSV) 2, IgM Antibodies", "Human Immunodeficiency Virus (HIV) - 1 and 2, Antibody Test/HIV-DUO", "Human Immunodeficiency Virus (HIV), Card", "Malaria Antigen Detection", "Malarial Parasite (MP)", "Rapid Plasma Reagin (RPR) / VDRL", "Rubella Virus, IgG / (RV - IgG) / Rubella IgG, Antibodies", "Rubella Virus, IgM / (RV - IgM) / Rubella IgM, Antibodies", "Stool Examination, Routine; Stool, R/E", "Treponema Pallidium Hemagglutination Assay (TPHA) Test", "Tuberculosis - AFB/ZN/TB Stain", "Typhidot, IgG", "Typhidot, IgM", "Urine Culture and Sensitivity (C/S) Test", "Widal (Slide Agglutination)"
-                ],
-                "Tumor Markers": [
-                    "Alpha Fetoprotein (AFP)", "Cancer Antigen (CA 125), Ovarian Cancer Marker", "Cancer Antigen (CA 15.3), Breast Cancer Marker", "Cancer Antigen (CA 19.9), Pancreatic Cancer Marker", "Carcinoembryonic Antigen (CEA)", "Prostate Specific Antigen (PSA), Free", "Prostate Specific Antigen (PSA), Total", "Thyroglobulin; TG / Thyroglobulin Tumor Marker"
-                ],
-                "Urinalysis & Renal Function": [
-                    "Creatinine with e-GFR", "Microalbumin, Spot Urine (Microalbumin/Creatinine Ratio)", "Protein/Creatinine Ratio, Urine", "Urine Routine and Microscopic (R/M) Test, Examination", "Urine Routine and Microscopy (R/M) Test, Automated"
-                ],
-                "Cytology": [
-                    "Papanicolaou (PAP) Smear by Liquid-Based Cytology (LBC)", "Papanicolaou (PAP) Smear by Slide"
-                ],
-                "Molecular Diagnostics": [
-                    "Cervical Screening Panel (High-Risk HPV PCR and Typing LBC)", "Hepatitis B Virus - Viral Load, Quantitative (PCR)/HBV-DNA PCR, Quantitative", "Hepatitis C Virus (HCV) by RNA PCR, Quantitative", "Human Leukocyte Antigen (HLA) B27 by PCR", "Tuberculosis - Genexpert Ultra MTB/RIF (AFB Expert Panel)"
-                ],
-                "Specialized Panels": [
-                    "Double Marker", "Kidney/Renal Function Test (KFT/RFT)", "Kidney/Renal Function Test (KFT/RFT) with e-GFR and Serum Electrolytes", "Kidney/Renal Function Test (KFT/RFT) with Serum Electrolytes", "Lipid Profile Advanced (including direct HDL and LDL)", "Lipid Profile Basic (including direct HDL and calculated LDL)", "Lipid Profile Comprehensive (including direct HDL and LDL + Apolipoprotein Profile)", "Liver Function Test (LFT)", "Quadruple Test", "Thyroid Profile, Free(FT3, FT4, TSH)", "Thyroid Profile, Total (T3, T4, TSH)", "TORCH Profile, IgG (5 Parameters)", "TORCH Profile, IgM (5 Parameters)"
-                ]
-            };
-
-            const searchInput = document.getElementById('searchInput');
-            const categoryButtonsContainer = document.getElementById('categoryButtons');
-            const testListContainer = document.getElementById('testList');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            
-            let activeCategory = 'All';
-
-            // Function to get all tests, sorted alphabetically
-            const getAllTests = () => {
-                return Object.values(testData).flat().sort((a, b) => a.localeCompare(b));
-            };
-
-            // Function to render the test cards
-            const renderTests = (tests) => {
-                testListContainer.innerHTML = '';
-                if (tests.length === 0) {
-                    noResultsMessage.classList.remove('hidden');
-                    testListContainer.classList.add('hidden');
-                } else {
-                    noResultsMessage.classList.add('hidden');
-                    testListContainer.classList.remove('hidden');
-                    tests.forEach(test => {
-                        const testCard = document.createElement('div');
-                        testCard.className = 'bg-white p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-slate-100';
-                        testCard.innerHTML = `<h3 class="font-semibold text-slate-800">${test}</h3>`;
-                        testListContainer.appendChild(testCard);
-                    });
-                }
-            };
-            
-            // Function to handle filtering by search and category
-            const applyFilters = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                let filteredTests;
-
-                if (activeCategory === 'All') {
-                    filteredTests = getAllTests();
-                } else {
-                    filteredTests = testData[activeCategory] || [];
-                }
-
-                if (searchTerm) {
-                    filteredTests = filteredTests.filter(test => test.toLowerCase().includes(searchTerm));
-                }
-                
-                renderTests(filteredTests);
-            };
-
-            // Function to render category buttons
-            const renderCategories = () => {
-                const categories = ['All', ...Object.keys(testData)];
-                categories.forEach(category => {
-                    const button = document.createElement('button');
-                    button.textContent = category;
-                    button.dataset.category = category;
-                    button.className = 'category-btn px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-semibold text-slate-600 bg-white rounded-full shadow-sm border border-slate-200 hover:bg-slate-100 transition-colors duration-200';
-                    if (category === 'All') {
-                        button.classList.add('active');
-                    }
-                    button.addEventListener('click', () => {
-                        activeCategory = category;
-                        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        searchInput.value = ''; // Reset search on category change
-                        applyFilters();
-                    });
-                    categoryButtonsContainer.appendChild(button);
-                });
-            };
-
-            // Initial setup
-            renderCategories();
-            applyFilters();
-
-            // Event listener for the search input
-            searchInput.addEventListener('input', applyFilters);
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: "POST",
+          body: JSON.stringify({ name, phone }),
+          headers: { "Content-Type": "application/json" },
         });
-    </script>
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          msg.textContent = "✅ Data submitted successfully!";
+          msg.style.color = "green";
+          document.getElementById("name").value = "";
+          document.getElementById("phone").value = "";
+        } else {
+          msg.textContent = "❌ Submission failed.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "⚠️ Error connecting to server.";
+        msg.style.color = "red";
+        console.error(error);
+      }
+    }
+  </script>
 </body>
 </html>
