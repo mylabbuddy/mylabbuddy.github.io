@@ -4,53 +4,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form-Google Sheets</title>
+    <title>Contact Us</title>
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
     <style>
-        form {
+        /* Form container */
+        #sheetdb-form {
             max-width: 400px;
-            margin: auto;
-            padding: 10px;
-            border: 1px solid #ccc;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
             border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="DATE"],
-        input[type="number"],
-        input[type="password"],
-        textarea {
+        /* Form title */
+        #sheetdb-form h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Input boxes */
+        #sheetdb-form .inputBox {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #sheetdb-form .inputBox input {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0 15px 0;
+            padding: 12px 15px 12px 40px;
+            /* Added padding on the left */
+            background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease;
         }
 
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+        #sheetdb-form .inputBox input:focus {
+            border-color: #007bff;
+        }
+
+        /* Icons inside input fields */
+        #sheetdb-form .inputBox span {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            /* Adjusted position of the icons */
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #007bff;
+        }
+
+        /* Submit button */
+        #sheetdb-form .btn {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #007bff;
             border: none;
             border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #sheetdb-form .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #45a049;
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        #submissionMessage {
+            font-size: 20px;
+            color: #333;
         }
     </style>
 </head>
 
 <body>
-    <form action="https://sheetdb.io/api/v1/xt6pamdeyi1ry" method="post">
-        <input type="text" name="data[NAME]" id="uname" placeholder="name">
-        <input type="email" name="data[EMAIL]" id="uemail" placeholder="email">
-        <input type="number" name="data[PHONE]" id="unumber" placeholder="ph number">
-        <input type="text" name="data[MESSAGE]" id="umsg" placeholder="your message..">
-        <input type="submit" value="Contact Now">
+    <form id="sheetdb-form" action="https://sheetdb.io/api/v1/xt6pamdeyi1ry" method="post">
+        <h3>Get in Touch 🤞</h3>
+        <div class="inputBox">
+            <span class="fas fa-user"></span>
+            <input type="text" placeholder="name" name="data[NAME]" id="CName" />
+        </div>
+        <div class="inputBox">
+            <span class="fas fa-envelope"></span>
+            <input type="email" placeholder="email" name="data[EMAIL]" id="CEmail" />
+        </div>
+        <div class="inputBox">
+            <span class="fas fa-phone"></span>
+            <input type="number" placeholder="number" name="data[PHONE]"/>
+        </div>
+
+        <div class="inputBox">
+            <span class="fas fa-comments"></span>
+            <input type="text" placeholder="message" name="data[MESSAGE]" />
+        </div>
+        <input type="submit" value="contact now" class="btn" />
     </form>
+
+    <!-- Custom modal -->
+    <div id="submissionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <p id="submissionMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        var form = document.getElementById('sheetdb-form');
+        var modal = document.getElementById('submissionModal');
+        var closeBtn = document.querySelector('.close-btn');
+        var submissionMessage = document.getElementById('submissionMessage');
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            fetch(form.action, {
+                method: "POST",
+                body: new FormData(document.getElementById("sheetdb-form")),
+            }).then(response => response.json())
+                .then(html => {
+                    submissionMessage.textContent = '😊 Thank you, for Dropping a Message ! ' + document.getElementById('CName').value;
+                    modal.style.display = "flex";
+                });
+        });
+
+        // Close the modal when clicking the close button
+        closeBtn.addEventListener("click", function () {
+            modal.style.display = "none";
+            window.location.href = '';  // Optional: reload the page
+            location.reload();
+        });
+
+        // Close the modal when clicking anywhere outside the modal content
+        window.addEventListener("click", function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                window.location.href = '';  // Optional: reload the page
+                location.reload();
+            }
+        });
+
+    </script>
+    <!-- <script>
+        var form = document.getElementById('sheetdb-form');
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            fetch(form.action, {
+                method: "POST",
+                body: new FormData(document.getElementById("sheetdb-form")),
+            }).then(
+                response => response.json()
+            ).then((html) => {
+                alert('Submitted !! 😊 Thank you ' + document.getElementById('CName').value)
+                window.location.href = '';
+                location.reload();
+            });
+        });
+    </script> -->
+
 </body>
 
 </html>
