@@ -1,105 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact Form</title>
-  <style>
-    body {
-      font-family: Poppins, sans-serif;
-      background: #f8f9fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .form-container {
-      background: white;
-      padding: 25px 35px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 320px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .msg {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-  </style>
-</head>
-<body>
-  <div class="form-container">
-    <h2>Contact Form</h2>
-    <input type="text" id="name" placeholder="Enter your name" required />
-    <input type="tel" id="phone" placeholder="Enter your phone number" required />
-    <button onclick="submitData()">Submit</button>
-    <div class="msg" id="msg"></div>
-  </div>
-
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxh4ZOK1gyQMtAQ1uouii91grvVr3zjSmUmcImobXFf7MKe2oI0kh5HZc54EA6AHCWTQ/exec"; // 👈 Add your Apps Script URL here
-
-    async function submitData() {
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const msg = document.getElementById("msg");
-
-      if (!name || !phone) {
-        msg.textContent = "Please enter both fields.";
-        msg.style.color = "red";
-        return;
-      }
-
-      try {
-        const response = await fetch(WEB_APP_URL, {
-          method: "POST",
-          body: JSON.stringify({ name, phone }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        const result = await response.json();
-
-        if (result.status === "success") {
-          msg.textContent = "✅ Data submitted successfully!";
-          msg.style.color = "green";
-          document.getElementById("name").value = "";
-          document.getElementById("phone").value = "";
-        } else {
-          msg.textContent = "❌ Submission failed.";
-          msg.style.color = "red";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form-Google Sheets</title>
+    <style>
+        form {
+            max-width: 400px;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
         }
-      } catch (error) {
-        msg.textContent = "⚠️ Error connecting to server.";
-        msg.style.color = "red";
-        console.error(error);
-      }
-    }
-  </script>
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="DATE"],
+        input[type="number"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="https://sheetdb.io/api/v1/xt6pamdeyi1ry" method="post">
+        <input type="text" name="data[NAME]" id="uname" placeholder="name">
+        <input type="email" name="data[EMAIL]" id="uemail" placeholder="email">
+        <input type="number" name="data[PHONE]" id="unumber" placeholder="ph number">
+        <input type="text" name="data[MESSAGE]" id="umsg" placeholder="your message..">
+        <input type="submit" value="Contact Now">
+    </form>
 </body>
+
 </html>
