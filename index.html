@@ -1,215 +1,910 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us</title>
-    <!-- font awesome cdn link  -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <title>Diagnostic Test Booker & Price Comparison</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Form container */
-        #sheetdb-form {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-primary { background-color: #1a4d94; } /* Deep Blue */
+        .text-accent { color: #00b894; } /* Bright Teal */
+        .bg-accent { background-color: #00b894; }
+        
+        .badge-pathology { background-color: #fce7f3; color: #db2777; } /* Pink */
+        .badge-radiology { background-color: #e0f2fe; color: #0284c7; } /* Sky Blue */
+        .badge-health { background-color: #ecfdf5; color: #059669; } /* Emerald Green */
+        .badge-cardiology { background-color: #fef2f2; color: #ef4444; } /* Red */
+        
+        .custom-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
 
-        /* Form title */
-        #sheetdb-form h3 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-family: 'Arial', sans-serif;
-        }
+        /* Modal Animation */
+        .modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal.active .modal-content { transform: scale(1); }
 
-        /* Input boxes */
-        #sheetdb-form .inputBox {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        #sheetdb-form .inputBox input {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            /* Added padding on the left */
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            outline: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            transition: border-color 0.3s ease;
-        }
-
-        #sheetdb-form .inputBox input:focus {
-            border-color: #007bff;
-        }
-
-        /* Icons inside input fields */
-        #sheetdb-form .inputBox span {
-            position: absolute;
-            top: 50%;
-            left: 15px;
-            /* Adjusted position of the icons */
-            transform: translateY(-50%);
-            font-size: 18px;
-            color: #007bff;
-        }
-
-        /* Submit button */
-        #sheetdb-form .btn {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #sheetdb-form .btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Modal styling */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-
-
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black;
-            text-decoration: none;
-        }
-
-        #submissionMessage {
-            font-size: 20px;
-            color: #333;
+        /* Cart Badge Animation */
+        .cart-bounce { animation: bounce 0.5s; }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
     </style>
 </head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-<body>
-    <form id="sheetdb-form" action="https://sheetdb.io/api/v1/xt6pamdeyi1ry" method="post">
-        <h3>Get in Touch 🤞</h3>
-        <div class="inputBox">
-            <span class="fas fa-user"></span>
-            <input type="text" placeholder="name" name="data[NAME]" id="CName" />
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+            <h1 class="text-xl sm:text-2xl font-extrabold text-primary flex items-center gap-2">
+                <i class="fas fa-microscope"></i> My Lab Buddy<span class="text-accent hidden sm:inline">- MLB</span>
+            </h1>
+            
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <!-- Location Detector (Updated to Pincode Input) -->
+                <div class="flex items-center bg-gray-50 rounded-lg px-2 sm:px-3 py-1 border border-gray-200">
+                    <i class="fas fa-map-marker-alt text-red-500 mr-2 text-sm sm:text-base"></i>
+                    <div class="mr-3 hidden sm:block">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">Service Area</p>
+                        <p id="location-display-text" class="text-xs sm:text-sm font-bold text-gray-700 leading-none" data-pincode="110001">Connaught Place (110001)</p>
+                    </div>
+                    <button onclick="openPincodeModal()" class="text-xs bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-100 transition text-primary font-semibold">
+                        <i class="fas fa-edit sm:hidden"></i> <span class="hidden sm:inline">Change</span>
+                    </button>
+                </div>
+
+                <!-- Lab Locator Link -->
+                <a href="#" onclick="showCustomAlert('Lab Locator', 'This feature would typically open a map view. For now, it will open a general Google Maps search for diagnostic labs near your selected area.', false); window.open('https://www.google.com/maps/search/Diagnostic+Labs+near+Delhi', '_blank'); return false;"
+                   class="relative p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition" title="Find Nearest Lab">
+                    <i class="fas fa-search-location text-lg sm:text-xl text-primary"></i>
+                </a>
+
+                <button onclick="openCartModal()" class="relative p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                    <i class="fas fa-shopping-cart text-lg sm:text-xl text-primary"></i>
+                    <span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+                </button>
+            </div>
         </div>
-        <div class="inputBox">
-            <span class="fas fa-envelope"></span>
-            <input type="email" placeholder="email" name="data[EMAIL]" id="CEmail" />
-        </div>
-        <div class="inputBox">
-            <span class="fas fa-phone"></span>
-            <input type="number" placeholder="number" name="data[PHONE]"/>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-8">
+        
+        <div class="w-full max-w-2xl text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Find & Book Diagnostic Tests</h2>
+            <p class="text-gray-500">Compare prices across top labs and book instantly.</p>
         </div>
 
-        <div class="inputBox">
-            <span class="fas fa-comments"></span>
-            <input type="text" placeholder="message" name="data[MESSAGE]" />
+        <!-- Search Bar -->
+        <div class="w-full max-w-2xl relative z-30">
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400 text-lg"></i>
+                </div>
+                <input type="text" id="testSearchInput" placeholder="Search for tests and packages" 
+                    class="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition duration-150 sm:text-lg shadow-sm"
+                    oninput="handleSearch(this.value)">
+                
+                <!-- Search Results Dropdown -->
+                <div id="searchResults" class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl overflow-hidden hidden max-h-80 overflow-y-auto border border-gray-100 divide-y divide-gray-100">
+                    <!-- Results injected here via JS -->
+                </div>
+            </div>
         </div>
-        <input type="submit" value="contact now" class="btn" />
-    </form>
 
-    <!-- Custom modal -->
-    <div id="submissionModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <p id="submissionMessage"></p>
+        <!-- Initial Placeholder / Hero Image area -->
+        <div id="hero-placeholder" class="mt-12 text-center opacity-60">
+            <i class="fas fa-file-medical-alt text-6xl text-gray-300 mb-4"></i>
+            <p class="text-gray-400">Search for a test to see available labs and prices.</p>
+        </div>
+
+    </main>
+
+    <!-- PINCODE/LOCATION SELECTION MODAL -->
+    <div id="pincodeModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="p-5 border-b flex justify-between items-center bg-primary text-white rounded-t-2xl">
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-map-marked-alt mr-2"></i> Select Service Area
+                </h3>
+                <button onclick="closePincodeModal()" class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-5 space-y-4">
+                <p class="text-sm text-gray-600">Enter your 6-digit Pincode to see available labs and prices in your area.</p>
+                
+                <input type="number" id="pincodeInput" placeholder="Enter Pincode (e.g., 110001)" 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    oninput="loadAreasByPincode(this.value)" minlength="6" maxlength="6">
+
+                <div id="pincodeMessage" class="text-sm text-red-500 hidden">Pincode not found. Try a different one.</div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Select Area:</label>
+                    <select id="areaSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white appearance-none cursor-pointer" onchange="selectAreaFromDropdown(this.value)" disabled>
+                        <option value="" disabled selected>Please enter a valid Pincode first</option>
+                    </select>
+                </div>
+
+                <button id="confirmAreaButton" onclick="confirmAreaSelection()" class="w-full bg-accent text-white font-bold py-3 rounded-xl shadow-md hover:bg-[#009b7c] transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                    Confirm Area
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- LAB SELECTION MODAL -->
+    <div id="labSelectionModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="p-5 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl">
+                <div>
+                    <h3 id="modalTestName" class="text-xl font-bold text-gray-800">Test Name</h3>
+                    <p id="modalTestCategory" class="text-sm text-gray-500 uppercase tracking-wide font-semibold mt-1">Category</p>
+                </div>
+                <button onclick="closeLabModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-200 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Lab List) -->
+            <div id="labListContainer" class="p-5 overflow-y-auto space-y-3 bg-gray-50/50">
+                <!-- Lab cards injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div id="cartModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b flex justify-between items-center bg-primary text-white rounded-t-2xl">
+                <h3 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i> Your Cart
+                </h3>
+                <button onclick="closeCartModal()" class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto flex-grow">
+                
+                <!-- Lab Constraint Info -->
+                <div id="cartLabInfo" class="hidden mb-4 bg-indigo-50 border border-indigo-100 rounded-lg p-3 flex items-start">
+                    <i class="fas fa-info-circle text-indigo-500 mt-0.5 mr-2"></i>
+                    <div class="text-sm text-indigo-800">
+                        Booking from: <span id="cartLabName" class="font-bold"></span>
+                        <p class="text-xs text-indigo-600 mt-1">All tests must be from the same lab.</p>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div id="cartItemsList" class="space-y-3">
+                    <p class="text-center text-gray-400 py-8">Your cart is empty.</p>
+                </div>
+
+                <!-- Collection Info -->
+                <div id="collectionInfoMessage" class="mt-4 text-xs text-center text-gray-500 bg-gray-100 p-2 rounded">
+                    <!-- Dynamic message about home/centre visit -->
+                </div>
+
+                <!-- Price Comparison -->
+                <div id="priceComparisonSection" class="mt-6 pt-4 border-t hidden">
+                    <h4 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Compare with other Labs</h4>
+                    <div id="comparisonTable" class="space-y-2">
+                        <!-- Injected -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-t bg-gray-50 rounded-b-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-600 font-medium">Total Estimate:</span>
+                    <span id="cartTotal" class="text-2xl font-extrabold text-primary">₹0</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 transform active:scale-95">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    <span>Confirm Booking on WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all scale-100">
+            <div id="alertIconContainer" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <i id="alertIcon" class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+            <h4 id="alertTitle" class="font-bold text-lg text-gray-900 mb-2">Alert</h4>
+            <p id="alertMessage" class="text-sm text-gray-500 mb-6">Message goes here.</p>
+            <button onclick="closeCustomAlert()" class="w-full bg-gray-900 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition">
+                Understood
+            </button>
         </div>
     </div>
 
     <script>
-        var form = document.getElementById('sheetdb-form');
-        var modal = document.getElementById('submissionModal');
-        var closeBtn = document.querySelector('.close-btn');
-        var submissionMessage = document.getElementById('submissionMessage');
+        // --- GLOBAL STATE ---
+        let cart = []; 
+        let currentCartLabId = null;
+        // User Location State
+        let selectedPincode = 110001;
+        let selectedAreaName = "Connaught Place";
+        
+        // --- DATA FROM uploaded:pincode.json ---
+        const PINCODE_DATA = [{"Area Name":"Connaught Place","Pincode":110001},{"Area Name":"Constitution House","Pincode":110001},{"Area Name":"Eastern Court","Pincode":110001},{"Area Name":"Election Commission","Pincode":110001},{"Area Name":"Janpath","Pincode":110001},{"Area Name":"Krishi Bhawan","Pincode":110001},{"Area Name":"Lady Harding Medical College","Pincode":110001},{"Area Name":"Laxminarain Mandir","Pincode":110001},{"Area Name":"North Avenue","Pincode":110001},{"Area Name":"New Delhi G P O","Pincode":110001},{"Area Name":"Parliament House","Pincode":110001},{"Area Name":"Patiala House","Pincode":110001},{"Area Name":"Parliament Street H O","Pincode":110001},{"Area Name":"Pragati Maidan","Pincode":110001},{"Area Name":"Rail Bhawan","Pincode":110001},{"Area Name":"Shastri Bhawan","Pincode":110001},{"Area Name":"Supreme Court","Pincode":110001},{"Area Name":"Sectt North","Pincode":110001},{"Area Name":"Sansadiya Soudha","Pincode":110001},{"Area Name":"Ajmeri Gate Extension","Pincode":110002},{"Area Name":"A G C R","Pincode":110002},{"Area Name":"Ansari Road","Pincode":110002},{"Area Name":"Darya Ganj","Pincode":110002},{"Area Name":"Gandhi Samarak","Pincode":110002},{"Area Name":"Indian Agriculture","Pincode":110002},{"Area Name":"Indraprastha Estate","Pincode":110002},{"Area Name":"Indraprastha H O","Pincode":110002},{"Area Name":"Minto Road","Pincode":110002},{"Area Name":"Nidhi","Pincode":110002},{"Area Name":"Rajghat Power House","Pincode":110002},{"Area Name":"Aliganj","Pincode":110003},{"Area Name":"Delhi High Court","Pincode":110003},{"Area Name":"Golf Links","Pincode":110003},{"Area Name":"Jawahar Lal Nehru Stadium","Pincode":110003},{"Area Name":"Lok Nagar Bhawan","Pincode":110003},{"Area Name":"Lodi Road H O","Pincode":110003},{"Area Name":"Lodi House Hostel","Pincode":110003},{"Area Name":"Lodi Colony Market","Pincode":110003},{"Area Name":"Oberei Intercontinental","Pincode":110003},{"Area Name":"Pandara Road","Pincode":110003},{"Area Name":"Pragati Vihar","Pincode":110003},{"Area Name":"Safdarjang Air Port","Pincode":110003},{"Area Name":"Wazir Nagar","Pincode":110003},{"Area Name":"Rashtrapati Bhawan","Pincode":110004},{"Area Name":"Anand Parbat","Pincode":110005},{"Area Name":"Anand Nagar","Pincode":110005},{"Area Name":"Bank Street","Pincode":110005},{"Area Name":"Desh Bandhu Gupta Road","Pincode":110005},{"Area Name":"Guru Gobind Singh Marg","Pincode":110005},{"Area Name":"Industrial Area","Pincode":110005},{"Area Name":"Joshi Nagar","Pincode":110005},{"Area Name":"Karol Bagh","Pincode":110005},{"Area Name":"Lower Camp Anand Parbat","Pincode":110005},{"Area Name":"Model Basti","Pincode":110005},{"Area Name":"Sat Nahar","Pincode":110005},{"Area Name":"Than Singh Nagar","Pincode":110005},{"Area Name":"Bara Tooti","Pincode":110006},{"Area Name":"Chawri Bazar","Pincode":110006},{"Area Name":"Chandni Chowk","Pincode":110006},{"Area Name":"Delhi Sadar Bazar","Pincode":110006},{"Area Name":"Delhi G P O","Pincode":110006},{"Area Name":"Delhi Cloth Mills","Pincode":110006},{"Area Name":"Dareeba","Pincode":110006},{"Area Name":"Farashkhana","Pincode":110006},{"Area Name":"Fatehpuri","Pincode":110006},{"Area Name":"Hamdard Dawakhana","Pincode":110006},{"Area Name":"Hauz Qazi","Pincode":110006},{"Area Name":"Idgah Road I S B T","Pincode":110006},{"Area Name":"Jama Masjid","Pincode":110006},{"Area Name":"Mori Gate","Pincode":110006},{"Area Name":"Red Fort","Pincode":110006},{"Area Name":"Sadar Thana Road","Pincode":110006},{"Area Name":"Birla Lines","Pincode":110007},{"Area Name":"C C Institute","Pincode":110007},{"Area Name":"Delhi University","Pincode":110007},{"Area Name":"Jawahar Nagar","Pincode":110007},{"Area Name":"Kamla Nagar","Pincode":110007},{"Area Name":"Lancer Road Market","Pincode":110007},{"Area Name":"Lok Nayak Bhawan","Pincode":110007},{"Area Name":"Malka Ganj Market","Pincode":110007},{"Area Name":"Malka Ganj","Pincode":110007},{"Area Name":"Patrachar Road","Pincode":110007},{"Area Name":"Patrachar Vidyala","Pincode":110007},{"Area Name":"Partap Nagar","Pincode":110007},{"Area Name":"Pragati Vihar","Pincode":110007},{"Area Name":"Rly C A O","Pincode":110007},{"Area Name":"Rana Pratap Bagh","Pincode":110007},{"Area Name":"Roshan Area Road","Pincode":110007},{"Area Name":"Roop Nagar","Pincode":110007},{"Area Name":"Shakti Nagar","Pincode":110007},{"Area Name":"Subzi Mandi","Pincode":110007},{"Area Name":"Sewa Sangh","Pincode":110007},{"Area Name":"Safdarjang Air Port","Pincode":110007},{"Area Name":"Timarpur","Pincode":110007},{"Area Name":"Wazir Nagar","Pincode":110007},{"Area Name":"Dada Ghosh Bhawan","Pincode":110008},{"Area Name":"Patel Nagar East","Pincode":110008},{"Area Name":"Patel Nagar","Pincode":110008},{"Area Name":"Patel Nagar West","Pincode":110008},{"Area Name":"Patel Nagar South","Pincode":110008},{"Area Name":"Army Base","Pincode":110010},{"Area Name":"A P S Colony","Pincode":110010},{"Area Name":"A F Palam","Pincode":110010},{"Area Name":"Bazar Road","Pincode":110010},{"Area Name":"Central Ordinance","Pincode":110010},{"Area Name":"Central Vehicle","Pincode":110010},{"Area Name":"Depot","Pincode":110010},{"Area Name":"Dhaula Khuan","Pincode":110010},{"Area Name":"Delhi Cantt","Pincode":110010},{"Area Name":"Kirby Place","Pincode":110010},{"Area Name":"Work Shop","Pincode":110010},{"Area Name":"Defence Head Qrs","Pincode":110011},{"Area Name":"Gymkhana Club","Pincode":110011},{"Area Name":"Nirman Bhawan","Pincode":110011},{"Area Name":"South Avenue","Pincode":110011},{"Area Name":"Sectt South","Pincode":110011},{"Area Name":"Shahjahan Road","Pincode":110011},{"Area Name":"U P S C","Pincode":110011},{"Area Name":"Udyog Bhawan","Pincode":110011},{"Area Name":"Central Tractor","Pincode":110012},{"Area Name":"Inderpuri","Pincode":110012},{"Area Name":"N P Laboratories","Pincode":110012},{"Area Name":"Organisation","Pincode":110012},{"Area Name":"Research Institute","Pincode":110012},{"Area Name":"Dargah Shareef","Pincode":110013},{"Area Name":"Hazrat Nizamuddin","Pincode":110013},{"Area Name":"Hari Nagar Ashram","Pincode":110014},{"Area Name":"Jangpura","Pincode":110014},{"Area Name":"Central Kirti Nagar","Pincode":110015},{"Area Name":"D I Area","Pincode":110015},{"Area Name":"E S I Hospital","Pincode":110015},{"Area Name":"Industrial Area","Pincode":110015},{"Area Name":"Karampura","Pincode":110015},{"Area Name":"Kirti Nagar","Pincode":110015},{"Area Name":"Mansarover Garden","Pincode":110015},{"Area Name":"Moti Nagar","Pincode":110015},{"Area Name":"North Industrial Area","Pincode":110015},{"Area Name":"Ramesh Nagar H O","Pincode":110015},{"Area Name":"Sudershan Park","Pincode":110015},{"Area Name":"Vishnu Garden","Pincode":110015},{"Area Name":"Zakhira","Pincode":110015},{"Area Name":"Ashram","Pincode":110016},{"Area Name":"Green Park Market","Pincode":110016},{"Area Name":"Green Park","Pincode":110016},{"Area Name":"Hauz Khas Market","Pincode":110016},{"Area Name":"Hauz Khas","Pincode":110016},{"Area Name":"I I T Hauz Khas","Pincode":110016},{"Area Name":"N I E Compus","Pincode":110016},{"Area Name":"Shri Aurobindo","Pincode":110016},{"Area Name":"Yusaf Sarai","Pincode":110016},{"Area Name":"Malviya Nagar","Pincode":110017},{"Area Name":"Pushpa Vihar Sector I","Pincode":110017},{"Area Name":"Panchseel Enclave","Pincode":110017},{"Area Name":"South Malviya Nagar","Pincode":110017},{"Area Name":"Ashok Nagar","Pincode":110018},{"Area Name":"Chand Nagar","Pincode":110018},{"Area Name":"Fateh Nagar","Pincode":110018},{"Area Name":"Khyalla Phase II","Pincode":110018},{"Area Name":"Khyalla Phase I","Pincode":110018},{"Area Name":"Mahabir Nagar","Pincode":110018},{"Area Name":"Major Bhupinder Singh Nag","Pincode":110018},{"Area Name":"Tilak Nagar","Pincode":110018},{"Area Name":"Tihar","Pincode":110018},{"Area Name":"Tilak Nagar East","Pincode":110018},{"Area Name":"Vikaspuri","Pincode":110018},{"Area Name":"Vishnu Garden","Pincode":110018},{"Area Name":"Govindpuri","Pincode":110019},{"Area Name":"Kalkaji","Pincode":110019},{"Area Name":"Nehru Place","Pincode":110019},{"Area Name":"Alaknanda","Pincode":110019},{"Area Name":"Lal Kuan","Pincode":110019},{"Area Name":"Chittranjan Park","Pincode":110019},{"Area Name":"Tehkhand","Pincode":110019},{"Area Name":"Tugalkabad","Pincode":110019},{"Area Name":"Kalkaji Extension","Pincode":110019},{"Area Name":"Tugalkabad Extension","Pincode":110019},{"Area Name":"Tara Apartment","Pincode":110019},{"Area Name":"C R R I","Pincode":110020},{"Area Name":"Flatted Factories Complex","Pincode":110020},{"Area Name":"Okhla Industrial Estate","Pincode":110020},{"Area Name":"Ashoka Hotel","Pincode":110021},{"Area Name":"Anand Niketan","Pincode":110021},{"Area Name":"Chankyapuri","Pincode":110021},{"Area Name":"Malcha Marg","Pincode":110021},{"Area Name":"Moti Bagh","Pincode":110021},{"Area Name":"Nanakpura","Pincode":110021},{"Area Name":"Postal Saving Bureau","Pincode":110022},{"Area Name":"R K Puram Sector I","Pincode":110022},{"Area Name":"R K Puram Sector II","Pincode":110022},{"Area Name":"R K Puram Sector III","Pincode":110022},{"Area Name":"R K Puram Sector Iv","Pincode":110022},{"Area Name":"R K Puram Sector XII","Pincode":110022},{"Area Name":"R K Puram Sector IX","Pincode":110022},{"Area Name":"R K Puram V","Pincode":110022},{"Area Name":"R K Puram Sector VII","Pincode":110022},{"Area Name":"R K Puram Sector VIII","Pincode":110022},{"Area Name":"Kidwai Nagar","Pincode":110023},{"Area Name":"Kidwai Nagar West","Pincode":110023},{"Area Name":"Laxmi Bai Nagar","Pincode":110023},{"Area Name":"Netaji Nagar","Pincode":110023},{"Area Name":"Sarojini Nagar H O","Pincode":110023},{"Area Name":"Amar Colony","Pincode":110024},{"Area Name":"Defence Colony","Pincode":110024},{"Area Name":"Krishna Market","Pincode":110024},{"Area Name":"Lajpat Nagar","Pincode":110024},{"Area Name":"Jamia Nagar","Pincode":110025},{"Area Name":"Zakhir Nagar","Pincode":110025},{"Area Name":"Punjabi Bagh Sector Iii","Pincode":110026},{"Area Name":"Punjabi Bagh","Pincode":110026},{"Area Name":"Janta Market","Pincode":110027},{"Area Name":"J 6 Block Rajouri Garden","Pincode":110027},{"Area Name":"J J Colony","Pincode":110027},{"Area Name":"Najafgarh Road","Pincode":110027},{"Area Name":"Rajouri Market","Pincode":110027},{"Area Name":"Rajouri Garden","Pincode":110027},{"Area Name":"Subhash Nagar","Pincode":110027},{"Area Name":"Subhash Nagar West","Pincode":110027},{"Area Name":"Tatarpur","Pincode":110027},{"Area Name":"Naraina Vihar","Pincode":110028},{"Area Name":"Naraina","Pincode":110028},{"Area Name":"Naraina Industrial Estate","Pincode":110028},{"Area Name":"Himayunpur Extn","Pincode":110029},{"Area Name":"Nauroji Nagar","Pincode":110029},{"Area Name":"Safdarjang Enclave","Pincode":110029},{"Area Name":"Mehrauli","Pincode":110030},{"Area Name":"T B Hospital","Pincode":110030},{"Area Name":"Gandhi Nagar Bazar","Pincode":110031},{"Area Name":"Gandhi Nagar","Pincode":110031},{"Area Name":"Geeta Colony","Pincode":110031},{"Area Name":"Kailash Nagar","Pincode":110031},{"Area Name":"Raghubarpura","Pincode":110031},{"Area Name":"Sahstri Nagar","Pincode":110031},{"Area Name":"Bhola Nath Nagar","Pincode":110032},{"Area Name":"Balbir Nagar","Pincode":110032},{"Area Name":"Dilshad Garden","Pincode":110032},{"Area Name":"Kabool Nagar","Pincode":110032},{"Area Name":"Loni Road","Pincode":110032},{"Area Name":"Mansarover Park","Pincode":110032},{"Area Name":"New Seemapuri","Pincode":110032},{"Area Name":"Rohtash Nagar","Pincode":110032},{"Area Name":"Seemapuri Old","Pincode":110032},{"Area Name":"Shahdara Mandi","Pincode":110032},{"Area Name":"Shahdara","Pincode":110032},{"Area Name":"Teliwara","Pincode":110032},{"Area Name":"Vishwa Karma Nagar","Pincode":110032},{"Area Name":"Vishwan Nagar","Pincode":110032},{"Area Name":"Vivek Vihar","Pincode":110032},{"Area Name":"Adarsh Nagar","Pincode":110033},{"Area Name":"A T Mills","Pincode":110033},{"Area Name":"Bhaiparma Nand Nagar","Pincode":110033},{"Area Name":"Gujranwala Nagar Part Ii","Pincode":110033},{"Area Name":"G T S Nagar","Pincode":110033},{"Area Name":"Harijan Sewak Sangh","Pincode":110033},{"Area Name":"Jahangirpuri Block H","Pincode":110033},{"Area Name":"Jahangirpuri Block D","Pincode":110033},{"Area Name":"Jahangirpuri Block A","Pincode":110033},{"Area Name":"Jaroda Majra","Pincode":110033},{"Area Name":"Mukerjee Nagar","Pincode":110033},{"Area Name":"Model Town A Block","Pincode":110033},{"Area Name":"Model Town II","Pincode":110033},{"Area Name":"New Sabzi Mandi","Pincode":110033},{"Area Name":"Nirankari Colony","Pincode":110033},{"Area Name":"Suraj Nagar","Pincode":110033},{"Area Name":"Shalimar Bagh","Pincode":110033},{"Area Name":"Vijay Nagar","Pincode":110033},{"Area Name":"Anandvas Shakurpur","Pincode":110034},{"Area Name":"Multani Mohalla","Pincode":110034},{"Area Name":"Pitampura","Pincode":110034},{"Area Name":"Rani Bagh","Pincode":110034},{"Area Name":"Shakurpur Block I","Pincode":110034},{"Area Name":"Srinagar Colony","Pincode":110034},{"Area Name":"Saraswati Vihar","Pincode":110034},{"Area Name":"Shakurbasti R S","Pincode":110034},{"Area Name":"Ganeshpuri","Pincode":110035},{"Area Name":"Inderlok","Pincode":110035},{"Area Name":"Lawrence Road","Pincode":110035},{"Area Name":"Lekhu Nagar","Pincode":110035},{"Area Name":"Onkar Nagar","Pincode":110035},{"Area Name":"Power House","Pincode":110035},{"Area Name":"Sarai Rohila","Pincode":110035},{"Area Name":"Alipur","Pincode":110036},{"Area Name":"Nangli Poona","Pincode":110036},{"Area Name":"Gurgaon Road","Pincode":110037},{"Area Name":"A F Rajokari","Pincode":110038},{"Area Name":"Bawana","Pincode":110039},{"Area Name":"Narela Town","Pincode":110040},{"Area Name":"Narela","Pincode":110040},{"Area Name":"Sanoth","Pincode":110040},{"Area Name":"Budh Nagar","Pincode":110041},{"Area Name":"Jawalpuri","Pincode":110041},{"Area Name":"Nagloi","Pincode":110041},{"Area Name":"Nangloi Phase III","Pincode":110041},{"Area Name":"Sultanpuri Block F","Pincode":110041},{"Area Name":"Suttanpuri Block B","Pincode":110041},{"Area Name":"Sultanpuri Block C","Pincode":110041},{"Area Name":"Badli","Pincode":110042},{"Area Name":"Haiderpur","Pincode":110042},{"Area Name":"Sameypur Badli","Pincode":110042},{"Area Name":"Najafgarh","Pincode":110043},{"Area Name":"Badarpur T P Station","Pincode":110044},{"Area Name":"Badarpur","Pincode":110044},{"Area Name":"Tughlakabad","Pincode":110044},{"Area Name":"Tughlakabad A F Station","Pincode":110044},{"Area Name":"Ambrohi","Pincode":110045},{"Area Name":"Bakrola","Pincode":110045},{"Area Name":"Palam Enclave","Pincode":110045},{"Area Name":"Palam","Pincode":110045},{"Area Name":"Nangal Rava","Pincode":110046},{"Area Name":"Arjan Garh","Pincode":110047},{"Area Name":"Greater Kailash Ii","Pincode":110048},{"Area Name":"Greater Kailash","Pincode":110048},{"Area Name":"Kailash Colony","Pincode":110048},{"Area Name":"Kailash","Pincode":110048},{"Area Name":"Masjidmoth Phase II","Pincode":110048},{"Area Name":"N Block Greater","Pincode":110048},{"Area Name":"Asian Games Village","Pincode":110049},{"Area Name":"Andrews Ganj","Pincode":110049},{"Area Name":"Guatam Nagar","Pincode":110049},{"Area Name":"Gulmohar Park","Pincode":110049},{"Area Name":"Masjid Moth Extn","Pincode":110049},{"Area Name":"Sadiq Nagar","Pincode":110049},{"Area Name":"South Extn Part II","Pincode":110049},{"Area Name":"South Extn Part I","Pincode":110049},{"Area Name":"Azad Nagar","Pincode":110051},{"Area Name":"Anarkali","Pincode":110051},{"Area Name":"Gobindpura","Pincode":110051},{"Area Name":"Krishan Nagar Bazar","Pincode":110051},{"Area Name":"Krishan Nagar H O","Pincode":110051},{"Area Name":"Lajpat Rai Chowk","Pincode":110051},{"Area Name":"Radheypuri","Pincode":110051},{"Area Name":"Ram Nagar","Pincode":110051},{"Area Name":"Ashok Vihar H O","Pincode":110052},{"Area Name":"Bharat Nagar","Pincode":110052},{"Area Name":"Nimri","Pincode":110052},{"Area Name":"Shastri Nagar","Pincode":110052},{"Area Name":"Satyawati Nagar","Pincode":110052},{"Area Name":"Wazirpur Phase III","Pincode":110052},{"Area Name":"Bhajanpuri","Pincode":110053},{"Area Name":"Brahampuri","Pincode":110053},{"Area Name":"Jagjit Nagar","Pincode":110053},{"Area Name":"Maujpur","Pincode":110053},{"Area Name":"Seelampur","Pincode":110053},{"Area Name":"Yamuna Vihar","Pincode":110053},{"Area Name":"Zafrabad","Pincode":110053},{"Area Name":"Civil Lines","Pincode":110054},{"Area Name":"C R P F Camp","Pincode":110054},{"Area Name":"Distt Courts","Pincode":110054},{"Area Name":"Maidens Hotel","Pincode":110054},{"Area Name":"Amrit Kaur Market","Pincode":110055},{"Area Name":"Multani Dhanda","Pincode":110055},{"Area Name":"Paharganj","Pincode":110055},{"Area Name":"P S B Paharganj","Pincode":110055},{"Area Name":"Swami Ram Tirath Nagar","Pincode":110055},{"Area Name":"Shakurbasti","Pincode":110056},{"Area Name":"Munirka","Pincode":110057},{"Area Name":"Vasant Vihar I","Pincode":110057},{"Area Name":"Vasant Vihar II","Pincode":110057},{"Area Name":"Janakpuri Block C 4","Pincode":110058},{"Area Name":"Janakpuri","Pincode":110058},{"Area Name":"Janakpuri Block D 1","Pincode":110058},{"Area Name":"Janakpuri Blockc 2","Pincode":110058},{"Area Name":"Possangipur","Pincode":110058},{"Area Name":"Jeewan Park","Pincode":110059},{"Area Name":"Uttam Nagar","Pincode":110059},{"Area Name":"New Rajinder Nagar","Pincode":110060},{"Area Name":"Ravinder Rangsala","Pincode":110060},{"Area Name":"Rajinder Nagar","Pincode":110060},{"Area Name":"Bijwasan","Pincode":110061},{"Area Name":"Ambedkar Nagar","Pincode":110062},{"Area Name":"B S F Camp Tigri","Pincode":110062},{"Area Name":"Dakshinpuri Phase III","Pincode":110062},{"Area Name":"Dakshimpuri Phase I","Pincode":110062},{"Area Name":"Hamdard Nagar","Pincode":110062},{"Area Name":"Khanpur","Pincode":110062},{"Area Name":"Madangir","Pincode":110062},{"Area Name":"Pushpa Bhawan","Pincode":110062},{"Area Name":"Madipur","Pincode":110063},{"Area Name":"Paschim Vihar","Pincode":110063},{"Area Name":"Paschim Vihar Block B","Pincode":110063},{"Area Name":"Qr Madipur","Pincode":110063},{"Area Name":"Hari Nagar Da & Db Block","Pincode":110064},{"Area Name":"Hari Nagar Be Block","Pincode":110064},{"Area Name":"Mayapuri Shopping Centre","Pincode":110064},{"Area Name":"Mayapuri","Pincode":110064},{"Area Name":"East Of Kailash","Pincode":110065},{"Area Name":"Nehru Nagar","Pincode":110065},{"Area Name":"Sriniwaspuri","Pincode":110065},{"Area Name":"R K Puram West","Pincode":110066},{"Area Name":"R K Puram","Pincode":110066},{"Area Name":"D D A Munirka","Pincode":110067},{"Area Name":"Jawahar Lal Nehru Univers","Pincode":110067},{"Area Name":"Chhawla","Pincode":110071},{"Area Name":"D D A Salam","Pincode":110072},{"Area Name":"Jharoda Kalan","Pincode":110072},{"Area Name":"P T S Jharoda Kalan","Pincode":110072},{"Area Name":"Ujwa","Pincode":110073},{"Area Name":"Kanjhawala","Pincode":110081},{"Area Name":"Khera Kalan","Pincode":110082},{"Area Name":"Mangolpuri Block S","Pincode":110083},{"Area Name":"Mangolpuri Block A","Pincode":110083},{"Area Name":"Mangolpuri Block 1","Pincode":110083},{"Area Name":"Mangolpuri","Pincode":110083},{"Area Name":"Kutubgarh","Pincode":110084},{"Area Name":"Himmatpuri","Pincode":110091},{"Area Name":"Khichripur","Pincode":110091},{"Area Name":"Kalyanpuri","Pincode":110091},{"Area Name":"Trilokpuri","Pincode":110091},{"Area Name":"Kalyan Vas","Pincode":110092},{"Area Name":"Laxmi Nagar Market","Pincode":110092},{"Area Name":"Patper Ganj","Pincode":110092},{"Area Name":"Shakarpur","Pincode":110092},{"Area Name":"Nand Nagri A Block","Pincode":110093},{"Area Name":"Nand Nagri","Pincode":110093},{"Area Name":"Nathu Colony","Pincode":110093},{"Area Name":"Chilla Villege","Pincode":110094},{"Area Name":"Gokulpuri","Pincode":110094},{"Area Name":"Karawal Nagar","Pincode":110094},{"Area Name":"Bhajan Pura","Pincode":110096}];
+        let selectedArea = PINCODE_DATA.find(a => a.Pincode === selectedPincode && a["Area Name"] === selectedAreaName) || PINCODE_DATA[0];
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            fetch(form.action, {
-                method: "POST",
-                body: new FormData(document.getElementById("sheetdb-form")),
-            }).then(response => response.json())
-                .then(html => {
-                    submissionMessage.textContent = '😊 Thank you, for Dropping a Message ! ' + document.getElementById('CName').value;
-                    modal.style.display = "flex";
-                });
-        });
+        // --- MOCK DATA ---
+        
+        // 5 Labs (coordinates for mock distance calculations)
+        const LABS = [
+            { id: 101, name: "Prognosis Diagnostics", isRadiology: true, isPathology: true, lat: 28.5562, lng: 77.2070, prices: {} }, 
+            { id: 102, name: "City Imaging & Labs", isRadiology: true, isPathology: false, lat: 28.6448, lng: 77.1232, prices: {} }, 
+            { id: 103, name: "Healthians", isRadiology: false, isPathology: true, lat: 28.5355, lng: 77.3910, prices: {} }, 
+            { id: 104, name: "Lal Pathlabs", isRadiology: true, isPathology: true, lat: 28.4595, lng: 77.0266, prices: {} }, 
+            { id: 105, name: "Agilus Diagnostics", isRadiology: false, isPathology: true, lat: 28.6994, lng: 77.1396, prices: {} },
+            { id: 106, name: "Sarvhit Scans Diagnostics Centre", isRadiology: true, isPathology: false, lat: 28.52711822268999, lng: 77.25732774880328, prices: {} }, 
+        ];
 
-        // Close the modal when clicking the close button
-        closeBtn.addEventListener("click", function () {
-            modal.style.display = "none";
-            window.location.href = '';  // Optional: reload the page
-            location.reload();
-        });
+        // Tests - Added 'priceVariation' array for different pricing logic per test based on pincode.
+        // The index in priceVariation (0-2) will be mapped to low/medium/high pincode groupings.
+        const MOCK_TESTS = [
+            // BasePrice is the tier 1 (lowest price), variation applies to tier 2 and 3.
+            { id: 1, name: "Complete Blood Count", type: 'pathology', category: 'Pathology', alt: ["CBC"], basePrice: 299, priceVariation: [1.0, 1.1, 1.2] },
+            { id: 2, name: "Liver Function Test", type: 'pathology', category: 'Pathology', alt: ["LFT"], basePrice: 599, priceVariation: [1.0, 1.05, 1.15] },
+            { id: 3, name: "Thyroid Profile", type: 'pathology', category: 'Pathology', alt: ["TFT"], basePrice: 699, priceVariation: [1.0, 1.1, 1.25] },
+            { id: 4, name: "Lipid Profile", type: 'pathology', category: 'Pathology', alt: ["Cholesterol"], basePrice: 799, priceVariation: [1.0, 1.05, 1.1] },
+            { id: 5, name: "Blood Sugar Fasting", type: 'pathology', category: 'Pathology', alt: ["FBS"], basePrice: 199, priceVariation: [1.0, 1.0, 1.0] },
+            { id: 10, name: "Full Body Checkup", type: 'pathology', category: 'Health Package', alt: ["Full Body"], basePrice: 1999, priceVariation: [1.0, 1.05, 1.15] },
+            
+            // Radiology - prices are higher, variance is also higher.
+            { id: 11, name: "MRI Brain", type: 'radiology', category: 'Radiology', alt: ["Brain Scan"], basePrice: 3500, priceVariation: [1.0, 1.1, 1.3] },
+            { id: 12, name: "CT Scan Chest", type: 'radiology', category: 'Radiology', alt: ["Chest CT"], basePrice: 2500, priceVariation: [1.0, 1.05, 1.2] },
+            { id: 13, name: "Ultrasound Abdomen", type: 'radiology', category: 'Radiology', alt: ["USG"], basePrice: 1200, priceVariation: [1.0, 1.1, 1.15] },
+            { id: 14, name: "X-Ray Chest PA", type: 'radiology', category: 'Radiology', alt: ["Xray"], basePrice: 400, priceVariation: [1.0, 1.0, 1.0] },
+        ];
 
-        // Close the modal when clicking anywhere outside the modal content
-        window.addEventListener("click", function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-                window.location.href = '';  // Optional: reload the page
-                location.reload();
+        // Assign Prices
+        function initializePrices() {
+            // Determine price tier based on pincode (Mocking different pricing per region)
+            // Example tiers: Pincodes starting with 1100 are Tier 1 (lowest), 11001-11005 are Tier 2, etc.
+            const pincodeStr = String(selectedPincode);
+            let priceTierIndex = 0; // Default Tier 1 (lowest price)
+
+            if (pincodeStr.startsWith('11002') || pincodeStr.startsWith('11004')) {
+                priceTierIndex = 1; // Medium Tier
+            } else if (pincodeStr.startsWith('11000')) {
+                priceTierIndex = 0; // Low Tier
+            } else {
+                priceTierIndex = 2; // High Tier (for simulation purposes)
             }
-        });
 
-    </script>
-    <!-- <script>
-        var form = document.getElementById('sheetdb-form');
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-            fetch(form.action, {
-                method: "POST",
-                body: new FormData(document.getElementById("sheetdb-form")),
-            }).then(
-                response => response.json()
-            ).then((html) => {
-                alert('Submitted !! 😊 Thank you ' + document.getElementById('CName').value)
-                window.location.href = '';
-                location.reload();
+
+            LABS.forEach(lab => {
+                lab.prices = {}; // Reset prices
+                MOCK_TESTS.forEach(test => {
+                    let price = null;
+                    const priceMultiplier = test.priceVariation[priceTierIndex];
+                    // Introduce slight random variation (0.95 to 1.05) on top of tier price
+                    const labFactor = 0.95 + Math.random() * 0.1; 
+                    const finalFactor = priceMultiplier * labFactor;
+
+                    if (test.type === 'pathology' && lab.isPathology) {
+                        price = Math.round(test.basePrice * finalFactor / 10) * 10;
+                    } else if (test.type === 'radiology' && lab.isRadiology) {
+                        price = Math.round(test.basePrice * finalFactor / 100) * 100;
+                    }
+                    
+                    // Only include the test if the lab supports it (i.e. price is not null)
+                    if (price) lab.prices[test.id] = price;
+                });
             });
-        });
-    </script> -->
 
+            // Re-render the cart if any prices might have changed (due to location change)
+            if (cart.length > 0) {
+                // Since lab prices changed, we must update the cart items.
+                const newCart = [];
+                cart.forEach(oldItem => {
+                    const lab = LABS.find(l => l.id === oldItem.labId);
+                    if (lab && lab.prices[oldItem.testId] !== undefined) {
+                        newCart.push({
+                            ...oldItem,
+                            price: lab.prices[oldItem.testId], // Update price
+                            labName: lab.name // ensure lab name is fresh
+                        });
+                    }
+                });
+                cart = newCart;
+                if (cart.length === 0) currentCartLabId = null;
+                updateCartUI();
+            }
+        }
+
+
+        // --- UTILITY ---
+
+        // Replaced GPS location with mock distance calculation based on Pincode groups
+        // In a real app, this would use Google Maps API to convert Pincode/Area Name to Lat/Lng
+        function getDistance(lat1, lon1, lat2, lon2) {
+            // Since we use Pincode, we'll mock distance based on the lab's general location type
+            // This is simplified as we don't have lat/lng data for the entered Pincodes.
+            // Mock Delhi (28.6139, 77.2090)
+            const R = 6371; 
+            
+            // Lab coordinates simulate their location (e.g., Gurgaon is further than City Imaging)
+            // Use Delhi Ctr as default "user location" for mock distance calculation
+            const userLat = 28.6139; 
+            const userLng = 77.2090; 
+            
+            const dLat = (lat2 - userLat) * Math.PI / 180;
+            const dLon = (lon2 - userLng) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(userLat * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return (R * c).toFixed(1);
+        }
+
+        function showCustomAlert(title, msg, isError = true) {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = msg;
+            const iconContainer = document.getElementById('alertIconContainer');
+            const icon = document.getElementById('alertIcon');
+            
+            if (isError) {
+                iconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4";
+                icon.className = "fas fa-exclamation-triangle text-red-600 text-xl";
+            } else {
+                iconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4";
+                icon.className = "fas fa-check text-green-600 text-xl";
+            }
+
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
+        
+        // --- PINCODE MODAL LOGIC ---
+        
+        function openPincodeModal() {
+            const modal = document.getElementById('pincodeModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('active'), 10);
+            document.getElementById('pincodeInput').value = selectedPincode;
+            loadAreasByPincode(selectedPincode);
+        }
+
+        function closePincodeModal() {
+            const modal = document.getElementById('pincodeModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function loadAreasByPincode(pincode) {
+            const pincodeValue = parseInt(pincode, 10);
+            const areaSelect = document.getElementById('areaSelect');
+            const confirmButton = document.getElementById('confirmAreaButton');
+            const message = document.getElementById('pincodeMessage');
+            
+            areaSelect.innerHTML = '<option value="" disabled selected>Select an area...</option>';
+            confirmButton.disabled = true;
+            areaSelect.disabled = true;
+            message.classList.add('hidden');
+
+            if (String(pincodeValue).length !== 6 || isNaN(pincodeValue)) {
+                return;
+            }
+
+            const areas = PINCODE_DATA.filter(area => area.Pincode === pincodeValue);
+
+            if (areas.length === 0) {
+                message.textContent = `No service areas found for Pincode ${pincodeValue}.`;
+                message.classList.remove('hidden');
+                return;
+            }
+
+            areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area["Area Name"];
+                option.textContent = area["Area Name"];
+                areaSelect.appendChild(option);
+            });
+            
+            areaSelect.disabled = false;
+            // Pre-select current area if it's in the list
+            if (areas.some(a => a["Area Name"] === selectedAreaName)) {
+                 areaSelect.value = selectedAreaName;
+                 confirmButton.disabled = false; // Enable confirm if a valid area is found and selected
+            } else {
+                // If a new pincode is entered and the old area isn't there, select the first one
+                areaSelect.value = areas[0]["Area Name"];
+                confirmButton.disabled = false;
+            }
+        }
+
+        function selectAreaFromDropdown(areaName) {
+            document.getElementById('confirmAreaButton').disabled = areaName === "";
+        }
+
+        function confirmAreaSelection() {
+            const areaSelect = document.getElementById('areaSelect');
+            const newAreaName = areaSelect.value;
+            const newPincode = parseInt(document.getElementById('pincodeInput').value, 10);
+
+            if (!newAreaName || isNaN(newPincode)) {
+                showCustomAlert("Invalid Selection", "Please enter a valid 6-digit Pincode and select an Area.", true);
+                return;
+            }
+            
+            // Check if the location actually changed to avoid unnecessary re-initialization
+            if (newPincode === selectedPincode && newAreaName === selectedAreaName) {
+                closePincodeModal();
+                return;
+            }
+
+            // Update global state
+            selectedPincode = newPincode;
+            selectedAreaName = newAreaName;
+            selectedArea = PINCODE_DATA.find(a => a.Pincode === newPincode && a["Area Name"] === newAreaName);
+            
+            // Clear cart due to change in service location (and thus prices/availability)
+            cart = [];
+            currentCartLabId = null;
+            
+            // Re-initialize prices based on the new location
+            initializePrices();
+            
+            // Update UI
+            document.getElementById('location-display-text').textContent = `${selectedAreaName} (${selectedPincode})`;
+            
+            closePincodeModal();
+            showCustomAlert("Location Updated", `Service area set to ${selectedAreaName} (Pincode: ${selectedPincode}). Cart cleared due to price changes.`, false);
+        }
+
+
+        // --- SEARCH LOGIC ---
+
+        function handleSearch(query) {
+            const container = document.getElementById('searchResults');
+            const hero = document.getElementById('hero-placeholder');
+            
+            query = query.toLowerCase().trim();
+            container.innerHTML = '';
+            
+            if (query.length === 0) {
+                container.classList.add('hidden');
+                hero.classList.remove('hidden');
+                return;
+            }
+
+            hero.classList.add('hidden');
+
+            const results = MOCK_TESTS.filter(t => 
+                t.name.toLowerCase().includes(query) || 
+                t.alt.some(a => a.toLowerCase().includes(query)) ||
+                t.category.toLowerCase().includes(query)
+            );
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="p-4 text-gray-500 text-center">No tests found.</div>';
+                container.classList.remove('hidden');
+                return;
+            }
+
+            const list = document.createElement('ul');
+            results.forEach(test => {
+                const li = document.createElement('li');
+                li.className = "p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0 flex justify-between items-center group";
+                // Only open lab selection if at least one lab has a price for the test in the current area
+                const isAvailable = LABS.some(lab => lab.prices[test.id] !== undefined);
+                
+                if (isAvailable) {
+                    li.onclick = () => openLabSelection(test.id);
+                } else {
+                    li.onclick = () => showCustomAlert("Not Available", `No labs are currently offering ${test.name} in your selected area.`, true);
+                    li.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+
+                const badgeColor = test.type === 'radiology' ? 'badge-radiology' : 'badge-pathology';
+
+                li.innerHTML = `
+                    <div>
+                        <div class="font-semibold text-gray-800 group-hover:text-primary transition">${test.name}</div>
+                        <span class="${badgeColor} text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide mt-1 inline-block">${test.category}</span>
+                    </div>
+                    <i class="fas ${isAvailable ? 'fa-chevron-right text-gray-300 group-hover:text-primary' : 'fa-times-circle text-red-400'}"></i>
+                `;
+                list.appendChild(li);
+            });
+            container.appendChild(list);
+            container.classList.remove('hidden');
+        }
+
+
+        // --- LAB SELECTION MODAL ---
+
+        function openLabSelection(testId) {
+            const test = MOCK_TESTS.find(t => t.id === testId);
+            if (!test) return;
+
+            const modalTestNameEl = document.getElementById('modalTestName');
+            modalTestNameEl.textContent = test.name;
+            modalTestNameEl.dataset.testId = testId; // Store for refreshing
+            document.getElementById('modalTestCategory').textContent = test.category;
+            
+            const container = document.getElementById('labListContainer');
+            container.innerHTML = '';
+
+            const availableLabs = LABS.filter(lab => lab.prices[testId] !== undefined);
+            
+            // Calculate distances and sort by price then distance
+            const labsWithMeta = availableLabs.map(lab => {
+                const dist = getDistance(null, null, lab.lat, lab.lng); // Using mock distance since real user Lat/Lng is removed
+                return { 
+                    ...lab, 
+                    distanceVal: dist ? parseFloat(dist) : 9999, 
+                    distanceStr: dist 
+                };
+            }).sort((a, b) => {
+                // Primary sort: Price (Ascending)
+                if (a.prices[testId] !== b.prices[testId]) {
+                    return a.prices[testId] - b.prices[testId];
+                }
+                // Secondary sort: Distance (Ascending)
+                return a.distanceVal - b.distanceVal;
+            });
+
+            if (labsWithMeta.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No labs available for this test in ${selectedAreaName}.</p>`;
+            }
+
+            labsWithMeta.forEach(lab => {
+                const price = lab.prices[testId];
+                // Disable if cart exists and lab differs (Enforce single-lab rule)
+                const isDifferentLab = currentCartLabId !== null && currentCartLabId !== lab.id;
+                // Display distance (using mock distance based on fixed Delhi center)
+                const distDisplay = lab.distanceStr ? 
+                    `<span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"><i class="fas fa-location-arrow mr-1"></i>${lab.distanceStr} km (Approx)</span>` : 
+                    `<span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Distance N/A</span>`;
+                
+                // Google Maps Direction URL: uses user location (mock Delhi center) to the lab
+                const gMapUrl = `https://www.google.com/maps/dir/${lab.lat},${lab.lng}`;
+
+                const card = document.createElement('div');
+                card.className = `bg-white p-4 rounded-xl border-2 transition ${isDifferentLab ? 'border-gray-100 opacity-60' : 'border-gray-100 hover:border-accent hover:shadow-md'}`;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-gray-800">${lab.name}</h4>
+                            <p class="text-xs text-gray-500">${lab.isPathology && lab.isRadiology ? 'Pathology & Radiology' : lab.isPathology ? 'Pathology Only' : 'Radiology Only'}</p>
+                            <div class="mt-1 flex items-center gap-2">
+                                ${distDisplay}
+                                ${isDifferentLab ? '<span class="text-xs text-red-500 font-medium">Different Lab Selected</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <div class="text-xl font-extrabold text-primary mb-2">₹${price}</div>
+                            
+                            <!-- Google Maps Direction Link -->
+                            <a href="${gMapUrl}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] text-primary border border-primary/50 font-bold px-3 py-1 rounded-full hover:bg-primary/10 transition mb-2">
+                                <i class="fas fa-directions mr-1"></i> Get Directions
+                            </a>
+
+                            <button onclick="addToCart(${test.id}, ${lab.id})" 
+                                class="text-xs font-bold px-4 py-2 rounded-lg transition
+                                ${isDifferentLab ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-blue-700'}">
+                                ${isDifferentLab ? 'Unavailable' : 'Add to Cart'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('testSearchInput').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+
+            const modal = document.getElementById('labSelectionModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeLabModal() {
+            const modal = document.getElementById('labSelectionModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+
+        // --- CART LOGIC ---
+
+        function addToCart(testId, labId) {
+            const test = MOCK_TESTS.find(t => t.id === testId);
+            const lab = LABS.find(l => l.id === labId);
+
+            if (!test || !lab) return;
+
+            // 1. Single Lab Rule (Mandatory)
+            if (currentCartLabId !== null && currentCartLabId !== labId) {
+                showCustomAlert("Lab Restriction", `You are booking with ${cart[0].labName}. All tests must be from the same lab. Please clear your cart or select this lab.`, true);
+                return;
+            }
+            
+            // 2. Duplicate Rule
+            if (cart.some(item => item.testId === testId)) {
+                showCustomAlert("Duplicate", "This test is already in your cart.", true);
+                return;
+            }
+
+            // Determine initial collection type based on requirements:
+            let initialCollection = 'Centre Visit'; 
+            if (test.type === 'pathology') {
+                initialCollection = 'Home Collection';
+            }
+            
+            cart.push({
+                testId,
+                testName: test.name,
+                type: test.type,
+                labId,
+                labName: lab.name,
+                price: lab.prices[testId],
+                userSelectedCollection: initialCollection // Initial default based on type
+            });
+
+            currentCartLabId = labId;
+            closeLabModal();
+            updateCartUI();
+            showCustomAlert("Added", `${test.name} added to cart.`, false);
+        }
+
+        function toggleCollectionType(index) {
+            const item = cart[index];
+            if (item.type !== 'pathology') return; // Only pathology can be toggled
+            
+            // Check if cart contains any Radiology (which forces Centre Visit)
+            const hasRadiology = cart.some(i => i.type === 'radiology');
+            if (hasRadiology) return; 
+
+            // Toggle only if it's Pathology-only cart
+            if (item.userSelectedCollection === 'Home Collection') {
+                item.userSelectedCollection = 'Centre Visit';
+            } else {
+                item.userSelectedCollection = 'Home Collection';
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            if (cart.length === 0) currentCartLabId = null;
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            // Badges
+            const badge = document.getElementById('cartCount');
+            badge.textContent = cart.length;
+            badge.style.opacity = cart.length > 0 ? 1 : 0;
+            if (cart.length > 0) {
+                badge.classList.remove('cart-bounce');
+                void badge.offsetWidth;
+                badge.classList.add('cart-bounce');
+            }
+
+            renderCartModalContent();
+        }
+
+        function renderCartModalContent() {
+            const list = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('cartTotal');
+            const infoMsg = document.getElementById('collectionInfoMessage');
+            const comparisonSec = document.getElementById('priceComparisonSection');
+            const labInfo = document.getElementById('cartLabInfo');
+            const labNameSpan = document.getElementById('cartLabName');
+
+            if (cart.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-400 py-8">Your cart is empty.</p>';
+                totalEl.textContent = '₹0';
+                infoMsg.innerHTML = '';
+                comparisonSec.classList.add('hidden');
+                labInfo.classList.add('hidden');
+                return;
+            }
+
+            labInfo.classList.remove('hidden');
+            labNameSpan.textContent = cart[0].labName;
+            comparisonSec.classList.remove('hidden');
+
+            // --- COLLECTION LOGIC ---
+            const hasRadiology = cart.some(i => i.type === 'radiology');
+            
+            let forcedCentre = hasRadiology;
+            
+            if (forcedCentre) {
+                // Rule: If Radiology is present (mixed or R-only), force Centre Visit for ALL items.
+                infoMsg.innerHTML = '<i class="fas fa-hospital text-orange-500 mr-1"></i> <b>Centre Visit Required</b> because your cart contains Radiology tests.';
+                infoMsg.className = "mt-4 text-sm text-center text-orange-700 bg-orange-50 p-2 rounded border border-orange-100";
+            } else {
+                // Rule: Pathology Only - Allow Toggle (show status based on selections)
+                infoMsg.innerHTML = '<i class="fas fa-home text-green-500 mr-1"></i> <b>Pathology Only:</b> Toggle collection type below.';
+                infoMsg.className = "mt-4 text-sm text-center text-green-700 bg-green-50 p-2 rounded border border-green-100";
+            }
+
+            let total = 0;
+            list.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                
+                let collectionDisplay;
+                
+                if (item.type === 'radiology' || forcedCentre) {
+                    // Radiology tests are always Centre Visit, or if forcedCentre is true
+                    collectionDisplay = `<span class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded"><i class="fas fa-hospital mr-1"></i> Centre Visit</span>`;
+                } else {
+                    // Pathology only cart - Allow toggle
+                    const currentMode = item.userSelectedCollection;
+                    collectionDisplay = `
+                        <button onclick="toggleCollectionType(${idx})" class="text-xs flex items-center gap-1 font-semibold px-2 py-1 rounded transition transform active:scale-95 ${currentMode === 'Home Collection' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
+                            <i class="fas ${currentMode === 'Home Collection' ? 'fa-home' : 'fa-hospital'}"></i>
+                            ${currentMode}
+                            <i class="fas fa-exchange-alt ml-1 opacity-50"></i>
+                        </button>
+                    `;
+                }
+
+                return `
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <div>
+                            <div class="font-bold text-gray-800 text-sm">${item.testName}</div>
+                            <div class="mt-1">${collectionDisplay}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-primary">₹${item.price}</div>
+                            <button onclick="removeFromCart(${idx})" class="text-xs text-red-400 underline mt-1">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalEl.textContent = `₹${total}`;
+            renderComparison();
+        }
+
+        function renderComparison() {
+            const container = document.getElementById('comparisonTable');
+            
+            // Find labs that support ALL items in cart
+            const viableLabs = LABS.filter(lab => {
+                return cart.every(item => lab.prices[item.testId] !== undefined);
+            });
+
+            // Calculate total price for the entire cart at each viable lab
+            const data = viableLabs.map(lab => {
+                const sum = cart.reduce((acc, item) => acc + lab.prices[item.testId], 0);
+                return { id: lab.id, name: lab.name, total: sum };
+            }).sort((a, b) => a.total - b.total); // Sort by total price
+
+            container.innerHTML = data.map(d => {
+                const isCurrent = d.id === currentCartLabId;
+                // Safely get current total, defaulting to Infinity if not found (shouldn't happen if cart > 0)
+                const currentTotal = LABS.find(l => l.id === currentCartLabId)?.prices[cart[0].testId] ? cart.reduce((acc, item) => acc + item.price, 0) : Infinity;
+                
+                return `
+                    <div class="flex justify-between items-center p-2 rounded ${isCurrent ? 'bg-indigo-50 border border-indigo-100' : 'bg-white border hover:bg-gray-50'}">
+                        <div class="text-sm text-gray-700">
+                            ${d.name} ${isCurrent ? '(Selected)' : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold ${d.total < currentTotal ? 'text-green-600' : 'text-gray-800'}">₹${d.total}</span>
+                            ${!isCurrent ? `<button onclick="switchLab(${d.id})" class="text-[10px] bg-gray-800 text-white px-2 py-1 rounded hover:bg-gray-700 active:scale-95">Switch</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function switchLab(newLabId) {
+            const newLab = LABS.find(l => l.id === newLabId);
+            if (!newLab) return;
+
+            // Update prices and info in cart for the new lab
+            cart.forEach(item => {
+                item.price = newLab.prices[item.testId];
+                item.labId = newLabId;
+                item.labName = newLab.name;
+            });
+            currentCartLabId = newLabId;
+            updateCartUI();
+            showCustomAlert("Switched", `Cart updated to ${newLab.name}.`, false);
+        }
+
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('active'), 10);
+            updateCartUI();
+        }
+
+        function closeCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) {
+                showCustomAlert("Empty Cart", "Please add tests to your cart before checking out.", true);
+                return;
+            }
+            
+            const currentLab = LABS.find(l => l.id === currentCartLabId);
+            if (!currentLab) return;
+
+            // Determine final collection mode for the entire booking based on the rules
+            const hasRadiology = cart.some(i => i.type === 'radiology');
+            const isPathologyOnly = cart.every(i => i.type === 'pathology');
+            
+            let finalMode = "Centre Visit";
+            if (isPathologyOnly && cart[0].userSelectedCollection === 'Home Collection') {
+                finalMode = "Home Collection";
+            } else if (isPathologyOnly && cart[0].userSelectedCollection === 'Centre Visit') {
+                finalMode = "Centre Visit";
+            } else if (hasRadiology) {
+                finalMode = "Centre Visit";
+            }
+
+            let locationDetails = '';
+            if (finalMode === "Centre Visit") {
+                // Use the mock Delhi center coordinates for a general Google Maps link
+                const gMapUrl = `https://www.google.com/maps/dir/28.6139,77.2090/${currentLab.lat},${currentLab.lng}`;
+                locationDetails = `\n\n*Collection Mode:* Centre Visit\n*Selected Area:* ${selectedAreaName} (${selectedPincode})\n*Lab Location (Google Maps):*\n${currentLab.name} - ${gMapUrl}`;
+            } else {
+                locationDetails = `\n\n*Collection Mode:* Home Collection\n*Selected Area:* ${selectedAreaName} (${selectedPincode})`;
+            }
+
+            let msg = `Hello, I want to book a diagnostic service with the following tests at ${currentLab.name} through My Lab Buddy:\n\n`;
+            let total = 0;
+            
+            cart.forEach((item, i) => {
+                msg += `${i+1}. ${item.testName} - ₹${item.price}\n`;
+                total += item.price;
+            });
+            msg += `\n*Total Estimate: ₹${total}*`;
+            msg += locationDetails;
+            
+            window.open(`https://wa.me/918448879897?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                setTimeout(() => event.target.classList.add('hidden'), 300);
+            }
+        }
+        
+        // Initialize prices based on default location on load
+        window.onload = initializePrices;
+    </script>
 </body>
-
 </html>
